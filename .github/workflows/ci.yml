@@ -20,10 +20,8 @@ env:
   NODE_DEFAULT_VERSION: 20
   NODE_OPTIONS: "--max_old_space_size=4096"
   CYCLONEDX_NPM_VERSION: '^2.0.0||^3.0.0'
-  AWS_REGION: 'us-west-1'
-  AWS_ACCOUNT_ID_Prod: '164104811732'
-  ECR_REPOSITORY_NAME: <juice-shop-ecr>
-  EC2_INSTANCE_ID: <YOUR_EC2_INSTANCE_ID> 
+  EC2_INSTANCE_ID: "i-05274d5ee31f76c57" 
+  ECR_REGISTRY_URI: "164104811732.dkr.ecr.us-west-1.amazonaws.com/repo-juice-shop-ecr"
 jobs:
   lint:
     runs-on: ubuntu-latest
@@ -263,7 +261,7 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: arn:aws:iam::020473515947:role/GitHubActionsOrchestratorRole
-          aws-region: ${{ env.AWS_REGION }}
+          aws-region: us-west-1
       
       - name: Get AWS account ID
         id: aws_account_id
@@ -273,8 +271,8 @@ jobs:
         id: assume_member_role
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: arn:aws:iam::${{ env.AWS_ACCOUNT_ID_Prod }}:role/GitHubActionsExecutionRole
-          aws-region: ${{ env.AWS_REGION }}
+          role-to-assume: arn:aws:iam::164104811732:role/GitHubActionsExecutionRole
+          aws-region: us-west-1
           role-session-name: GitHubActionsJuiceShopDeploymentSession
 
       - name: Login to Amazon ECR
@@ -285,7 +283,7 @@ jobs:
 
       - name: Get ECR repository URI
         id: ecr_uri
-        run: echo "ECR_REGISTRY_URI=${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY_NAME }}" >> $GITHUB_ENV
+        run: echo "ECR_REGISTRY_URI=${{ env.ECR_REGISTRY_URI }}" >> $GITHUB_ENV
 
       - name: Build and Tag Docker image
         run: |
