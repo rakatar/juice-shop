@@ -26,7 +26,7 @@
   "publisher": {
     "category": "vendor",
     "name": "OWASP Juice Shop",
-    "namespace": "/juice-shop/juice-shop",
+    "namespace": "/rakatar/juice-shop",
     "contact_details": "timo.pagel@owasp.org"
   },
   "role": "csaf_trusted_provider"

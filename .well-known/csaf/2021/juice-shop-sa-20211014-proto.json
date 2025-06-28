@@ -24,7 +24,7 @@
       "contact_details": "timo.pagel@owasp.org",
       "issuing_authority": "OWASP Juice Shop",
       "name": "OWASP Juice Shop Core Team",
-      "namespace": "https://github.com/juice-shop/juice-shop"
+      "namespace": "https://github.com/rakatar/juice-shop"
     },
     "title": "juice-shop-sa-20211014-proto",
     "tracking": {
@@ -56,7 +56,7 @@
         "name": ">=v12.10.2",
         "product": {
           "name": "OWASP Juice Shop",
-          "product_id": "juice-shop/juice-shop",
+          "product_id": "rakatar/juice-shop",
           "product_identification_helper": {
             "purl": "pkg:docker/bkimminich/juice-shop"
           }
@@ -76,7 +76,7 @@
       ],
       "product_status": {
         "known_affected": [
-          "juice-shop/juice-shop"
+          "rakatar/juice-shop"
         ]
       },
       "title": "The Juice Shop uses the library hoek which might be subject to prototype pollution via the clone function."

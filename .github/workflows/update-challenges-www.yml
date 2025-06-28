@@ -8,7 +8,7 @@ on:
 
 jobs:
   UpdateChallengesOnWebsite:
-    if: github.repository == 'juice-shop/juice-shop'
+    if: github.repository == 'rakatar/juice-shop'
     runs-on: ubuntu-latest
     steps:
     - name: Check out Git repository
@@ -21,7 +21,7 @@ jobs:
       run: |
         cd _data/
         rm challenges.yml
-        wget https://raw.githubusercontent.com/juice-shop/juice-shop/master/data/static/challenges.yml
+        wget https://raw.githubusercontent.com/rakatar/juice-shop/master/data/static/challenges.yml
     - uses: stefanzweifel/git-auto-commit-action@8621497c8c39c72f3e2a999a26b4ca1b5058a842 #v5.0.1
       with:
         commit_message: "Auto-update challenges.yml from ${{ github.sha }}"
