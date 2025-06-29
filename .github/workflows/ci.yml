@@ -274,12 +274,13 @@ jobs:
           role-to-assume: arn:aws:iam::164104811732:role/GitHubActionsExecutionRole
           aws-region: us-west-1
           role-session-name: GitHubActionsJuiceShopDeploymentSession
+          role-chaining: true
 
       - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
         env:
-          AWS_REGION: ${{ env.AWS_REGION }}
+          AWS_REGION: us-west-1
 
       - name: Get ECR repository URI
         id: ecr_uri
@@ -302,7 +303,7 @@ jobs:
             --document-name "AWS-RunShellScript" \
             --parameters "commands=['sudo docker pull ${{ env.ECR_REGISTRY_URI }}:latest', 'sudo docker stop juice-shop-container || true', 'sudo docker rm juice-shop-container || true', 'sudo docker run -d --name juice-shop-container -p 80:3000 ${{ env.ECR_REGISTRY_URI }}:latest']" \
             --comment "Deploy Juice Shop from ECR via GitHub Actions" \
-            --region ${{ env.AWS_REGION }} # Specify region for SSM command
+            --region us-west-1
   notify-slack:
     if: github.repository == 'rakatar/juice-shop' && github.event_name == 'push' && (success() || failure())
     needs:
