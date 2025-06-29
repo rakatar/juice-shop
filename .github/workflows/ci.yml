@@ -326,7 +326,7 @@ jobs:
           echo "EC2_INSTANCE_ID=$INSTANCE_ID" >> $GITHUB_ENV
           echo "EC2_INSTANCE_ID=$INSTANCE_ID"
           COMMAND_ID=$(aws ssm send-command \
-            --instance-ids "${{ env.EC2_INSTANCE_ID }}" \
+            --instance-ids "i-05274d5ee31f76c57" \
             --document-name "AWS-RunShellScript" \
             --parameters "commands=['sudo docker pull ${{ env.ECR_REGISTRY_URI }}:latest', 'sudo docker stop juice-shop-container || true', 'sudo docker rm juice-shop-container || true', 'sudo docker run -d --name juice-shop-container -p 80:3000 ${{ env.ECR_REGISTRY_URI }}:latest']" \
             --comment "Deploy Juice Shop from ECR via GitHub Actions" \
