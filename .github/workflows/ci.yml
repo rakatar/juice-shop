@@ -246,6 +246,7 @@ jobs:
             VCS_REF=${{ env.VCS_REF }}
             BUILD_DATE=${{ env.BUILD_DATE }}
             CYCLONEDX_NPM_VERSION=${{ env.CYCLONEDX_NPM_VERSION }}
+
   docker-build-and-deploy:
     if: github.repository == 'rakatar/juice-shop' && github.event_name == 'push' && github.ref == 'refs/heads/master'
     needs: [lint, coding-challenge-rsn, test, api-test, custom-config-test, smoke-test, docker-test]
@@ -262,10 +263,6 @@ jobs:
         with:
           role-to-assume: arn:aws:iam::020473515947:role/GitHubActionsOrchestratorRole
           aws-region: us-west-1
-      
-      - name: Get AWS account ID
-        id: aws_account_id
-        run: echo "AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query 'Account' --output text)" >> $GITHUB_ENV
 
       - name: Assume cross-account execution role
         id: assume_member_role
@@ -273,7 +270,6 @@ jobs:
         with:
           role-to-assume: arn:aws:iam::164104811732:role/GitHubActionsExecutionRole
           aws-region: us-west-1
-          role-chaining: true
 
       - name: Login to Amazon ECR
         id: login-ecr
@@ -283,7 +279,15 @@ jobs:
 
       - name: Get ECR repository URI
         id: ecr_uri
-        run: echo "ECR_REGISTRY_URI=${{ env.ECR_REGISTRY_URI }}" >> $GITHUB_ENV
+        run: echo "ECR_REGISTRY_URI=${{ steps.login-ecr.outputs.registry }}/repo-juice-shop-ecr" >> $GITHUB_ENV
+
+      - name: Get EC2 instance ID
+        run: |
+          INSTANCE_ID=$(aws ec2 describe-instances \
+            --filters "Name=tag:Purpose,Values=JuiceShop" \
+            --query 'Reservations[0].Instances[0].InstanceId' \
+            --output text)
+          echo "EC2_INSTANCE_ID=$INSTANCE_ID" >> $GITHUB_ENV
 
       - name: Build and Tag Docker image
         run: |
@@ -297,12 +301,15 @@ jobs:
 
       - name: Trigger EC2 deployment via SSM
         run: |
-          aws ssm send-command \
+          COMMAND_ID=$(aws ssm send-command \
             --instance-ids "${{ env.EC2_INSTANCE_ID }}" \
             --document-name "AWS-RunShellScript" \
             --parameters "commands=['sudo docker pull ${{ env.ECR_REGISTRY_URI }}:latest', 'sudo docker stop juice-shop-container || true', 'sudo docker rm juice-shop-container || true', 'sudo docker run -d --name juice-shop-container -p 80:3000 ${{ env.ECR_REGISTRY_URI }}:latest']" \
             --comment "Deploy Juice Shop from ECR via GitHub Actions" \
-            --region us-west-1
+            --region us-west-1 \
+            --query 'Command.CommandId' --output text)
+          aws ssm wait command-executed --command-id "$COMMAND_ID" --instance-id "${{ env.EC2_INSTANCE_ID }}" --region us-west-1
+
   notify-slack:
     if: github.repository == 'rakatar/juice-shop' && github.event_name == 'push' && (success() || failure())
     needs:
@@ -317,3 +324,4 @@ jobs:
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           slack_webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
+
