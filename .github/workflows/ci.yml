@@ -291,14 +291,6 @@ jobs:
         id: ecr_uri
         run: echo "ECR_REGISTRY_URI=${{ steps.login-ecr.outputs.registry }}/repo-juice-shop-ecr" >> $GITHUB_ENV
 
-      - name: Get EC2 instance ID
-        run: |
-          INSTANCE_ID=$(aws ec2 describe-instances \
-            --filters "Name=tag:Purpose,Values=JuiceShop" \
-            --query 'Reservations[0].Instances[0].InstanceId' \
-            --output text)
-          echo "EC2_INSTANCE_ID=$INSTANCE_ID" >> $GITHUB_ENV
-
       - name: Build and Tag Docker image
         run: |
           docker build -t ${{ env.ECR_REGISTRY_URI }}:${{ github.sha }} .
@@ -309,22 +301,8 @@ jobs:
           docker push ${{ env.ECR_REGISTRY_URI }}:${{ github.sha }}
           docker push ${{ env.ECR_REGISTRY_URI }}:latest
 
-      - name: verify EC2 instance ID
-        run: |
-          INSTANCE_ID=$(aws ec2 describe-instances \
-            --filters "Name=tag:Purpose,Values=JuiceShop" \
-            --query 'Reservations[0].Instances[0].InstanceId' \
-            --output text)
-          echo "EC2_INSTANCE_ID=$INSTANCE_ID"
-
       - name: Trigger EC2 deployment via SSM
         run: |
-          INSTANCE_ID=$(aws ec2 describe-instances \
-            --filters "Name=tag:Purpose,Values=JuiceShop" \
-            --query 'Reservations[0].Instances[0].InstanceId' \
-            --output text)
-          echo "EC2_INSTANCE_ID=$INSTANCE_ID" >> $GITHUB_ENV
-          echo "EC2_INSTANCE_ID=$INSTANCE_ID"
           COMMAND_ID=$(aws ssm send-command \
             --instance-ids "i-05274d5ee31f76c57" \
             --document-name "AWS-RunShellScript" \
@@ -332,7 +310,7 @@ jobs:
             --comment "Deploy Juice Shop from ECR via GitHub Actions" \
             --region us-west-1 \
             --query 'Command.CommandId' --output text)
-          aws ssm wait command-executed --command-id "$COMMAND_ID" --instance-id "${{ env.EC2_INSTANCE_ID }}" --region us-west-1
+          aws ssm wait command-executed --command-id "$COMMAND_ID" --instance-id "i-05274d5ee31f76c57" --region us-west-1
 
   notify-slack:
     if: github.repository == 'rakatar/juice-shop' && github.event_name == 'push' && (success() || failure())
