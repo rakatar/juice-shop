@@ -273,6 +273,7 @@ jobs:
         id: assume_member_role
         uses: aws-actions/configure-aws-credentials@v2
         with:
+          role-chaining: true
           role-to-assume: arn:aws:iam::164104811732:role/GitHubActionsExecutionRole
           aws-region: us-west-1
 
