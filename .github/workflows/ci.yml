@@ -309,6 +309,14 @@ jobs:
           docker push ${{ env.ECR_REGISTRY_URI }}:${{ github.sha }}
           docker push ${{ env.ECR_REGISTRY_URI }}:latest
 
+      - name: verify EC2 instance ID
+        run: |
+          INSTANCE_ID=$(aws ec2 describe-instances \
+            --filters "Name=tag:Purpose,Values=JuiceShop" \
+            --query 'Reservations[0].Instances[0].InstanceId' \
+            --output text)
+          echo "EC2_INSTANCE_ID=$INSTANCE_ID"
+
       - name: Trigger EC2 deployment via SSM
         run: |
           INSTANCE_ID=$(aws ec2 describe-instances \
@@ -316,6 +324,7 @@ jobs:
             --query 'Reservations[0].Instances[0].InstanceId' \
             --output text)
           echo "EC2_INSTANCE_ID=$INSTANCE_ID" >> $GITHUB_ENV
+          echo "EC2_INSTANCE_ID=$INSTANCE_ID"
           COMMAND_ID=$(aws ssm send-command \
             --instance-ids "${{ env.EC2_INSTANCE_ID }}" \
             --document-name "AWS-RunShellScript" \
