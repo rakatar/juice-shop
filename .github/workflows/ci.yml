@@ -273,7 +273,6 @@ jobs:
         with:
           role-to-assume: arn:aws:iam::164104811732:role/GitHubActionsExecutionRole
           aws-region: us-west-1
-          role-session-name: GitHubActionsJuiceShopDeploymentSession
           role-chaining: true
 
       - name: Login to Amazon ECR
