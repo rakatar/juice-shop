@@ -266,7 +266,7 @@ jobs:
 
       - name: Assume cross-account execution role
         id: assume_member_role
-        uses: aws-actions/configure-aws-credentials@v4
+        uses: aws-actions/configure-aws-credentials@v2
         with:
           role-to-assume: arn:aws:iam::164104811732:role/GitHubActionsExecutionRole
           aws-region: us-west-1
