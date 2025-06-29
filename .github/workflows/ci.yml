@@ -311,6 +311,11 @@ jobs:
 
       - name: Trigger EC2 deployment via SSM
         run: |
+          INSTANCE_ID=$(aws ec2 describe-instances \
+            --filters "Name=tag:Purpose,Values=JuiceShop" \
+            --query 'Reservations[0].Instances[0].InstanceId' \
+            --output text)
+          echo "EC2_INSTANCE_ID=$INSTANCE_ID" >> $GITHUB_ENV
           COMMAND_ID=$(aws ssm send-command \
             --instance-ids "${{ env.EC2_INSTANCE_ID }}" \
             --document-name "AWS-RunShellScript" \
