@@ -1,6 +1,14 @@
-name: "ZAP Baseline Scan"
+name: ZAP Baseline Scan
 
 on:
+  pull_request:
+      branches:
+          - master
+      paths-ignore:
+          - '*.md'
+          - 'LICENSE'
+          - 'data/static/i18n/*.json'
+          - 'frontend/src/assets/i18n/*.json'
   workflow_dispatch:
   schedule:
     - cron:  '0 18 * * 6'

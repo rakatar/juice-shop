@@ -1,32 +1,31 @@
-name: Trivy Codebase Scan
-
+name: buTrivy sca
 on:
-    pull_request: # (Optional, but highly recommended for CI/CD)
-        branches:
-            - master
-    workflow_dispatch:
-
+  pull_request:
+    branches:
+      - master
+    paths-ignore:
+      - '*.md'
+      - 'LICENSE'
+      - 'data/static/i18n/*.json'
+      - 'frontend/src/assets/i18n/*.json'
+  workflow_dispatch:
 jobs:
-  trivy_scan:
-    runs-on: ubuntu-latest
+  build:
+    name: Build
+    runs-on: ubuntu-24.04
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4 
+    - name: Checkout code
+      uses: actions/checkout@v4
 
-      - name: Install Trivy
-        uses: aquasecurity/trivy-action@master 
-
-      - name: Run Trivy filesystem scan (Vulnerabilities and Misconfigurations)
-
-        run: |
-          trivy fs \
-            --scanners vuln,config \
-            --format sarif \
-            --output trivy-results.sarif \
-            .
-
-      - name: Upload SARIF report to GitHub
-        uses: github/codeql-action/upload-sarif@v3 
-        with:
-          sarif_file: trivy-results.sarif 
-          category: 'Trivy Codebase Scan'
+    - name: Run Trivy vulnerability scanner in fs mode
+      uses: aquasecurity/trivy-action@0.28.0
+      with:
+        scan-type: 'fs'
+        scan-ref: '.'
+        trivy-config: trivy.yaml
+    - name: Upload Trivy results as artifact
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: trivy-results
+        path: trivy-results.json
