@@ -23,9 +23,3 @@ jobs:
         scan-type: 'fs'
         scan-ref: '.'
         trivy-config: trivy.yaml
-    - name: Upload Trivy results as artifact
-      if: always()
-      uses: actions/upload-artifact@v4
-      with:
-        name: trivy-results
-        path: trivy-results.json
