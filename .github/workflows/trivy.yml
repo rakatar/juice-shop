@@ -1,7 +1,10 @@
 name: Trivy Codebase Scan
 
 on:
-  workflow_dispatch:
+    pull_request: # (Optional, but highly recommended for CI/CD)
+        branches:
+            - master
+    workflow_dispatch:
 
 jobs:
   trivy_scan:
