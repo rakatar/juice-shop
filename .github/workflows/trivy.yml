@@ -1,0 +1,29 @@
+name: Trivy Codebase Scan
+
+on:
+  workflow_dispatch:
+
+jobs:
+  trivy_scan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4 
+
+      - name: Install Trivy
+        uses: aquasecurity/trivy-action@master 
+
+      - name: Run Trivy filesystem scan (Vulnerabilities and Misconfigurations)
+
+        run: |
+          trivy fs \
+            --scanners vuln,config \
+            --format sarif \
+            --output trivy-results.sarif \
+            .
+
+      - name: Upload SARIF report to GitHub
+        uses: github/codeql-action/upload-sarif@v3 
+        with:
+          sarif_file: trivy-results.sarif 
+          category: 'Trivy Codebase Scan'

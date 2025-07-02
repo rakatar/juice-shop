@@ -1,0 +1,21 @@
+SPDXVersion: SPDX-2.3
+DataLicense: CC0-1.0
+SPDXID: SPDXRef-DOCUMENT
+DocumentName: /Users/rakeshtaranath/desktop/briza/repo/juice-shop/frontend
+DocumentNamespace: http://trivy.dev/filesystem//Users/rakeshtaranath/desktop/briza/repo/juice-shop/frontend-e5d6a693-dfd2-402e-90a6-d6d82a5e02d8
+Creator: Organization: aquasecurity
+Creator: Tool: trivy-0.63.0
+Created: 2025-07-01T20:18:06Z
+
+##### Package: /Users/rakeshtaranath/desktop/briza/repo/juice-shop/frontend
+
+PackageName: /Users/rakeshtaranath/desktop/briza/repo/juice-shop/frontend
+SPDXID: SPDXRef-Filesystem-7b10c030fbe3d140
+PackageDownloadLocation: NONE
+PrimaryPackagePurpose: SOURCE
+FilesAnalyzed: false
+
+##### Relationships
+
+Relationship: SPDXRef-DOCUMENT DESCRIBES SPDXRef-Filesystem-7b10c030fbe3d140
+

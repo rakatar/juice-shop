@@ -1,8 +1,7 @@
 name: "CodeQL Scan"
 
 on:
-  push:
-  pull_request:
+  workflow_dispatch:
 
 jobs:
   analyze:
@@ -31,3 +30,11 @@ jobs:
       uses: github/codeql-action/autobuild@v3
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v3
+
+    - name: Upload CodeQL results as artifact
+      if: always()  # Run even if CodeQL fails
+      uses: actions/upload-artifact@v4
+      with:
+        name: codeql-results
+        path: results.sarif
+
